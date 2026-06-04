@@ -1,5 +1,4 @@
 import { randomBytes } from "crypto";
-import { urlsByCode } from "../store";
 
 const ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const DEFAULT_LENGTH = 7;
@@ -16,10 +15,16 @@ function randomCode(length = DEFAULT_LENGTH): string {
 }
 
 export function createUniqueShortCode(): string {
-  let code = randomCode();
+  return randomCode();
+}
 
-  while (urlsByCode.has(code)) {
-    code = randomCode();
+export async function createShortCodeWithUniquenessCheck(
+  exists: (shortCode: string) => Promise<boolean>
+): Promise<string> {
+  let code = createUniqueShortCode();
+
+  while (await exists(code)) {
+    code = createUniqueShortCode();
   }
 
   return code;
